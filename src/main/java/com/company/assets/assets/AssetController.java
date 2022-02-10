@@ -1,4 +1,4 @@
-package com.company.assets;
+package com.company.assets.assets;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,24 +11,29 @@ import java.util.List;
 public class AssetController {
 
     @Autowired
-    private AssetService assetService;
+    private final AssetService assetService;
+
+    public AssetController(AssetService assetService) {
+        this.assetService = assetService;
+    }
 
 
     @GetMapping("/assets")
-    public List<AssetEntity> getAll(){
+    public List<AssetEntity> getAll() {
         return assetService.getAllAssets();
     }
 
+
     @GetMapping("/assets/get/{id}")
     public AssetEntity getAsset(
-            @PathVariable(value = "id") int id)
-    {
-        return  assetService.getAsset(id);
+            @PathVariable(value = "id") int id) {
+        return assetService.getAsset(id);
     }
+
 
     @PostMapping("/assets/add")
     public ResponseEntity<AssetEntity> createAsset(
-            @RequestBody AssetEntity newAsset){
+            @RequestBody AssetEntity newAsset) {
         return assetService.createAsset(newAsset);
     }
 
@@ -40,11 +45,8 @@ public class AssetController {
 
 
     @DeleteMapping("/assets/remove/{id}")
-    public ResponseEntity<AssetEntity> removeAsset(
+    public ResponseEntity<String> removeAsset(
             @PathVariable(value = "id") int id) {
         return assetService.removeAsset(id);
     }
-
-
-
-    }
+}
