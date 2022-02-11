@@ -28,19 +28,25 @@ public class LocationService {
         return locationRepository.findAll();
     }
 
-    public LocationEntity getLocation(int id) {
+    public LocationEntity getLocationByID(int id) {
         if (!locationRepository.existsById(id)) {
             throw new ApiRequestException(invalidEntID("location"));
         }
         return locationRepository.findById(id).get();
     }
 
+    public List<LocationEntity> getLocationsByDesc(String description) {
+        return locationRepository.getLocationEntitiesByDescription(description);
+    }
+
     public ResponseEntity<LocationEntity> createLocation(LocationEntity newLocation) {
         if (locationRepository.existsById(newLocation.getLocationID())) {
             throw new ApiRequestException("This location ID already exists");
         }
-        else locationRepository.save(newLocation);
-        return new ResponseEntity<>(newLocation, HttpStatus.CREATED);
+        else {
+            locationRepository.save(newLocation);
+            return new ResponseEntity<>(newLocation, HttpStatus.CREATED);
+        }
     }
 
     public ResponseEntity<LocationEntity> updateLocation(LocationEntity newLocation) {
@@ -56,12 +62,12 @@ public class LocationService {
     }
 
     public ResponseEntity<String> removeLocation(int id) {
-        String locationDesc = getLocation(id).getDescription();
+        String locationDesc = getLocationByID(id).getDescription();
         if (!locationRepository.existsById(id)) {
             throw new ApiRequestException(invalidEntID("location"));
         }
         else {
-            locationRepository.delete(getLocation(id));
+            locationRepository.delete(getLocationByID(id));
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.TEXT_PLAIN)
                     .body("Location " + id + ": " + "\"" + locationDesc +  "\"" + " has been deleted.");

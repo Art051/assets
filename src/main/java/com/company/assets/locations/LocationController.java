@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/locations")
 public class LocationController {
 
     @Autowired
@@ -18,37 +18,38 @@ public class LocationController {
     }
 
 
-    @GetMapping("/locations")
-    public List<LocationEntity> getAll(){
+    @GetMapping
+    public List<LocationEntity> getAll() {
         return locationservice.getAllLocations();
     }
 
-    @GetMapping("/locations/get/{id}")
-    public LocationEntity getLocation(
-            @PathVariable(value = "id") int id)
-    {
-        return  locationservice.getLocation(id);
+    @GetMapping("/get/id/{id}")
+    public LocationEntity getLocationByID(
+            @PathVariable(value = "id") int id) {
+        return locationservice.getLocationByID(id);
     }
 
-    @PostMapping("/locations/add")
+    @GetMapping("/get/desc/{desc}")
+    public List<LocationEntity> getLocationsByDesc(
+            @PathVariable(value = "desc") String description) {
+        return locationservice.getLocationsByDesc(description);
+    }
+
+    @PostMapping("/add")
     public ResponseEntity<LocationEntity> createLocation(
-            @RequestBody LocationEntity newLocation){
+            @RequestBody LocationEntity newLocation) {
         return locationservice.createLocation(newLocation);
     }
 
-    @PutMapping("/locations/update")
+    @PutMapping("/update")
     public ResponseEntity<LocationEntity> updateLocation(
             @RequestBody LocationEntity newLocation) {
         return locationservice.updateLocation(newLocation);
     }
 
-
-    @DeleteMapping("/locations/remove/{id}")
+    @DeleteMapping("/remove/{id}")
     public ResponseEntity<String> removeLocation(
             @PathVariable(value = "id") int id) {
         return locationservice.removeLocation(id);
     }
-
-
-
-    }
+}

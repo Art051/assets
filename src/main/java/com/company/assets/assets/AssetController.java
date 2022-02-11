@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/assets")
 public class AssetController {
 
     @Autowired
@@ -18,33 +18,42 @@ public class AssetController {
     }
 
 
-    @GetMapping("/assets")
+    @GetMapping
     public List<AssetEntity> getAll() {
         return assetService.getAllAssets();
     }
 
-
-    @GetMapping("/assets/get/{id}")
-    public AssetEntity getAsset(
+    @GetMapping("/get/id/{id}")
+    public AssetEntity getAssetByID(
             @PathVariable(value = "id") int id) {
-        return assetService.getAsset(id);
+        return assetService.getAssetByID(id);
     }
 
+    @GetMapping("/get/desc/{desc}")
+    public List<AssetEntity> getAssetsByDesc(
+            @PathVariable(value = "desc") String description) {
+        return assetService.getAssetsByDesc(description);
+    }
 
-    @PostMapping("/assets/add")
+    @GetMapping("/get/location/{locationID}")
+    public List<AssetEntity> getAssetsByLocationID(
+            @PathVariable(value = "locationID") int id) {
+        return assetService.getAssetsByLocationID(id);
+    }
+
+    @PostMapping("/add")
     public ResponseEntity<AssetEntity> createAsset(
             @RequestBody AssetEntity newAsset) {
         return assetService.createAsset(newAsset);
     }
 
-    @PutMapping("/assets/update")
+    @PutMapping("/update")
     public ResponseEntity<AssetEntity> updateAsset(
             @RequestBody AssetEntity newAsset) {
         return assetService.updateAsset(newAsset);
     }
 
-
-    @DeleteMapping("/assets/remove/{id}")
+    @DeleteMapping("/remove/{id}")
     public ResponseEntity<String> removeAsset(
             @PathVariable(value = "id") int id) {
         return assetService.removeAsset(id);

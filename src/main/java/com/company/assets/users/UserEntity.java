@@ -1,6 +1,9 @@
 package com.company.assets.users;
 
+import com.company.assets.assets.AssetEntity;
+
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -14,12 +17,10 @@ public class UserEntity {
    private String firstName;
    @Column(name = "last_name")
    private String lastName;
+   @OneToMany(mappedBy="userEntity")
+   private Set<AssetEntity> assets;
 
-//   @OneToMany(mappedBy="userEntity")
-//   private Set<AssetEntity> assets;
-
-   public UserEntity() {
-   }
+   public UserEntity() {}
 
    public UserEntity(String firstName, String lastName) {
       this.firstName = firstName;
@@ -31,6 +32,7 @@ public class UserEntity {
       this.firstName = firstName;
       this.lastName = lastName;
    }
+
 
    public int getUserID() {
       return userID;
@@ -56,12 +58,21 @@ public class UserEntity {
       this.lastName = lastName;
    }
 
+   public Set<AssetEntity> getAssets() {
+      return assets;
+   }
+
+   public void setAssets(Set<AssetEntity> assets) {
+      this.assets = assets;
+   }
+
    @Override
    public String toString() {
       return "UserEntity{" +
-              "id=" + userID +
+              "userID=" + userID +
               ", firstName='" + firstName + '\'' +
               ", lastName='" + lastName + '\'' +
+              ", assets=" + assets +
               '}';
    }
 }

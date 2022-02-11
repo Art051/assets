@@ -38,21 +38,29 @@ public class AssetService {
         return assetRepository.findAll();
     }
 
-    public AssetEntity getAsset(int id) {
+    public AssetEntity getAssetByID(int id) {
         if (!assetRepository.existsById(id)) {
             throw new ApiRequestException(invalidEntID("asset"));
         }
         return assetRepository.findById(id).get();
     }
 
+    public List<AssetEntity> getAssetsByDesc(String description) {
+        return assetRepository.getAssetEntitiesByDescription(description);
+    }
+
+    public List<AssetEntity> getAssetsByLocationID(int locationID){
+        return assetRepository.getAssetEntitiesByLocationEntity_LocationID(locationID);
+    }
+
     public ResponseEntity<AssetEntity> createAsset(AssetEntity newAsset) {
         if (assetRepository.existsById(newAsset.getAssetID())) {
             throw new ApiRequestException("This asset ID already exists");
         }
-        if (!locationRepository.existsById(newAsset.getLocationID())) {
+        if (!locationRepository.existsById(newAsset.getLocationEntity().getLocationID())) {
             throw new ApiRequestException(invalidEntID("location"));
         }
-        if (!userRepository.existsById(newAsset.getUserID())) {
+        if (!userRepository.existsById(newAsset.getUserEntity().getUserID())) {
             throw new ApiRequestException(invalidEntID("user"));
         }
         else assetRepository.save(newAsset);
@@ -64,10 +72,10 @@ public class AssetService {
         if (!assetRepository.existsById(newAsset.getAssetID())) {
             throw new ApiRequestException(invalidEntID("asset"));
         }
-        if (!locationRepository.existsById(newAsset.getLocationID())) {
+        if (!locationRepository.existsById(newAsset.getLocationEntity().getLocationID())) {
             throw new ApiRequestException(invalidEntID("location"));
         }
-        if (!userRepository.existsById(newAsset.getUserID())) {
+        if (!userRepository.existsById(newAsset.getUserEntity().getUserID())) {
             throw new ApiRequestException(invalidEntID("user"));
         }
         else {
@@ -76,23 +84,25 @@ public class AssetService {
             newAsset.setMake(newAsset.getMake());
             newAsset.setModel(newAsset.getModel());
             newAsset.setValue(newAsset.getValue());
-            newAsset.setUserID(newAsset.getUserID());
-            newAsset.setLocationID(newAsset.getLocationID());
+            newAsset.setUserEntity(newAsset.getUserEntity());
+            newAsset.setLocationEntity(newAsset.getLocationEntity());
             final AssetEntity updatedAsset = assetRepository.save(newAsset);
             return ResponseEntity.ok(updatedAsset);
         }
     }
 
     public ResponseEntity<String> removeAsset(int id) {
-        String assetDesc = getAsset(id).getDescription();
+        String assetDesc = getAssetByID(id).getDescription();
         if (!assetRepository.existsById(id)) {
             throw new ApiRequestException(invalidEntID("asset"));
         }
         else {
-            assetRepository.delete(getAsset(id));
+            assetRepository.delete(getAssetByID(id));
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.TEXT_PLAIN)
                     .body("Asset " + id + ": " + "\"" + assetDesc + "\"" + " has been deleted.");
         }
     }
+
+
 }

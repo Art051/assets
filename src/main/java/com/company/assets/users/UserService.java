@@ -29,11 +29,15 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public UserEntity getUser(int id) {
+    public UserEntity getUserByID(int id) {
         if (!userRepository.existsById(id)) {
             throw new ApiRequestException(invalidEntID("user"));
         }
         return userRepository.findById(id).get();
+    }
+
+    public List<UserEntity> getUsersByFirstName(String firstName) {
+        return userRepository.findByFirstName(firstName);
     }
 
     public ResponseEntity<UserEntity> createUser(UserEntity newUser) {
@@ -60,16 +64,13 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<String> removeUser(
-            int id)
-    {
-        String userDesc = getUser(id).getFirstName();
-
+    public ResponseEntity<String> removeUser(int id) {
+        String userDesc = getUserByID(id).getFirstName();
         if (!userRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         else {
-            userRepository.delete(getUser(id));
+            userRepository.delete(getUserByID(id));
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.TEXT_PLAIN)
                     .body("User " + id + ": " + "\"" + userDesc +  "\"" + " has been deleted.");

@@ -8,7 +8,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
@@ -19,37 +19,38 @@ public class UserController {
     }
 
 
-    @GetMapping("/users")
-    public List<UserEntity> getAll(){
+    @GetMapping
+    public List<UserEntity> getAll() {
         return userService.getAllUsers();
     }
 
-    @GetMapping("/users/get/{id}")
-    public UserEntity getUser(
-            @PathVariable(value = "id") int id)
-    {
-        return  userService.getUser(id);
+    @GetMapping("/get/id/{id}")
+    public UserEntity getUserByID(
+            @PathVariable(value = "id") int id) {
+        return userService.getUserByID(id);
     }
 
-    @PostMapping("/users/add")
+    @GetMapping("/get/name/{first_name}")
+    public List<UserEntity> getUserByFirstName(
+            @PathVariable(value = "first_name") String firstName) {
+        return userService.getUsersByFirstName(firstName);
+    }
+
+    @PostMapping("/add")
     public ResponseEntity<UserEntity> createUser(
-            @Valid @RequestBody UserEntity newUser){
+            @Valid @RequestBody UserEntity newUser) {
         return userService.createUser(newUser);
     }
 
-    @PutMapping("/users/update")
+    @PutMapping("/update")
     public ResponseEntity<UserEntity> updateUser(
             @RequestBody UserEntity newUser) {
         return userService.updateUser(newUser);
     }
 
-
-    @DeleteMapping("/users/remove/{id}")
+    @DeleteMapping("/remove/{id}")
     public ResponseEntity<String> removeUser(
             @PathVariable(value = "id") int id) {
         return userService.removeUser(id);
     }
-
-
-
-    }
+}
