@@ -23,6 +23,7 @@ public class AssetEntity {
    private String model;
    @Column(name = "value", nullable = false, precision = 2)
    private BigDecimal value;
+   @JsonIgnore
    @ManyToOne(fetch = FetchType.LAZY)
    @JoinColumn(name="user_id")
    private UserEntity userEntity;

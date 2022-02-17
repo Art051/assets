@@ -103,6 +103,4 @@ public class AssetService {
                     .body("Asset " + id + ": " + "\"" + assetDesc + "\"" + " has been deleted.");
         }
     }
-
-
 }
