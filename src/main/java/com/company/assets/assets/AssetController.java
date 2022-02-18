@@ -35,10 +35,27 @@ public class AssetController {
         return assetService.getAssetsByDesc(description);
     }
 
-    @GetMapping("/get/location/{locationID}")
+    @GetMapping("/get/location/id/{locationID}")
     public List<AssetEntity> getAssetsByLocationID(
             @PathVariable(value = "locationID") int id) {
         return assetService.getAssetsByLocationID(id);
+    }
+
+    @GetMapping("/get/location/desc/{description}")
+    public List<AssetEntity> getAssetsByLocationDesc(
+            @PathVariable(value = "description") String description) {
+        return assetService.getAssetsByLocationDesc(description);
+    }
+
+    @GetMapping("/get/total")
+    public double getTotalValue() {
+        return assetService.getTotalAssetValue();
+    }
+
+    @GetMapping("/get/valuables/{limit}")
+    public List<AssetEntity> getValuables(
+            @PathVariable(value = "limit") int limit) {
+        return assetService.getHighValues(limit);
     }
 
     @PostMapping("/add")

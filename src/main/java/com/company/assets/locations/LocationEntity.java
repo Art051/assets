@@ -1,6 +1,7 @@
 package com.company.assets.locations;
 
 import com.company.assets.assets.AssetEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -15,6 +16,7 @@ public class LocationEntity {
    private int locationID;
    @Column(name = "description", nullable = false)
    private String description;
+   @JsonIgnore
    @OneToMany(mappedBy="locationEntity")
    private Set<AssetEntity> assets;
 

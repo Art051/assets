@@ -21,9 +21,10 @@ public class UserService {
     }
 
 
-    public String invalidEntID(String entity) {
-        return "This " + entity + " ID does not exist, please enter a different ID";
+    public String invalidQuery(String entity, String field) {
+        return "This " + entity + " " + field + " does not exist, please enter a valid query.";
     }
+
 
     public List<UserEntity> getAllUsers() {
         return userRepository.findAll();
@@ -31,30 +32,39 @@ public class UserService {
 
     public UserEntity getUserByID(int id) {
         if (!userRepository.existsById(id)) {
-            throw new ApiRequestException(invalidEntID("user"));
+            throw new ApiRequestException(invalidQuery("user", "ID"));
         }
-        return userRepository.findById(id).get();
+        else {
+            return userRepository.findById(id).get();
+        }
     }
 
     public List<UserEntity> getUsersByFirstName(String firstName) {
-        return userRepository.findByFirstName(firstName);
+        if (userRepository.findByFirstNameIgnoreCase(firstName).isEmpty()) {
+            throw new ApiRequestException(invalidQuery("user", "first name"));
+        }
+        else {
+            return userRepository.findByFirstNameIgnoreCase(firstName);
+        }
     }
 
     public ResponseEntity<UserEntity> createUser(UserEntity newUser) {
         if (userRepository.existsById(newUser.getUserID())) {
-            throw new ApiRequestException(invalidEntID("user"));
+            throw new ApiRequestException(invalidQuery("user","ID"));
         }
         if (newUser.getFirstName().isBlank()) {
             throw new ApiRequestException("First name must be entered.");
         }
-        else userRepository.save(newUser);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        else {
+            userRepository.save(newUser);
+            return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        }
     }
 
     public ResponseEntity<UserEntity> updateUser(
             UserEntity newUser) {
         if (!userRepository.existsById(newUser.getUserID())) {
-            throw new ApiRequestException(invalidEntID("user"));
+            throw new ApiRequestException(invalidQuery("user","ID"));
         }
         else {
             newUser.setFirstName(newUser.getFirstName());

@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface LocationRepository extends JpaRepository<LocationEntity, Integer> {
 
-    List<LocationEntity> getLocationEntitiesByDescription(String description);
+    List<LocationEntity> getLocationEntitiesByDescriptionIgnoreCase(String description);
 }

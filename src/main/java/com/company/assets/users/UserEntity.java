@@ -1,6 +1,7 @@
 package com.company.assets.users;
 
 import com.company.assets.assets.AssetEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -17,6 +18,7 @@ public class UserEntity {
    private String firstName;
    @Column(name = "last_name")
    private String lastName;
+   @JsonIgnore
    @OneToMany(mappedBy="userEntity")
    private Set<AssetEntity> assets;
 

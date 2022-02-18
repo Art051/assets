@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -30,9 +31,10 @@ public class AssetService {
         this.userRepository = userRepository;
     }
 
-    public String invalidEntID(String entity) {
-        return "This " + entity + " ID does not exist, please enter a different ID";
+    public String invalidQuery(String entity, String field) {
+        return "This " + entity + " " + field + " does not exist, please enter a valid query.";
     }
+
 
     public List<AssetEntity> getAllAssets() {
         return assetRepository.findAll();
@@ -40,43 +42,78 @@ public class AssetService {
 
     public AssetEntity getAssetByID(int id) {
         if (!assetRepository.existsById(id)) {
-            throw new ApiRequestException(invalidEntID("asset"));
+            throw new ApiRequestException(invalidQuery("asset", "ID"));
         }
-        return assetRepository.findById(id).get();
+        else {
+            return assetRepository.findById(id).get();
+        }
     }
 
     public List<AssetEntity> getAssetsByDesc(String description) {
-        return assetRepository.getAssetEntitiesByDescription(description);
+        if (assetRepository.getAssetEntitiesByDescriptionIgnoreCase(description).isEmpty()) {
+            throw new ApiRequestException(invalidQuery("asset", "description"));
+        }
+        else {
+            return assetRepository.getAssetEntitiesByDescriptionIgnoreCase(description);
+        }
     }
 
-    public List<AssetEntity> getAssetsByLocationID(int locationID){
-        return assetRepository.getAssetEntitiesByLocationEntity_LocationID(locationID);
+    public List<AssetEntity> getAssetsByLocationID(int locationID) {
+        if (!locationRepository.existsById(locationID)) {
+            throw new ApiRequestException(invalidQuery("location","ID"));
+        }
+        else {
+            return assetRepository.getAssetEntitiesByLocationEntity_LocationID(locationID);
+        }
+    }
+
+    public List<AssetEntity> getAssetsByLocationDesc(String description) {
+        if (locationRepository.getLocationEntitiesByDescriptionIgnoreCase(description).isEmpty()) {
+            throw new ApiRequestException(invalidQuery("location", "description"));
+        }
+        else {
+            return assetRepository.getAssetEntitiesByLocationEntity_DescriptionIgnoreCase(description);
+        }
+    }
+
+    public double getTotalAssetValue(){
+        return assetRepository.sumValues();
     }
 
     public ResponseEntity<AssetEntity> createAsset(AssetEntity newAsset) {
         if (assetRepository.existsById(newAsset.getAssetID())) {
-            throw new ApiRequestException("This asset ID already exists");
+            throw new ApiRequestException("This asset ID already exists.");
         }
         if (!locationRepository.existsById(newAsset.getLocationEntity().getLocationID())) {
-            throw new ApiRequestException(invalidEntID("location"));
+            throw new ApiRequestException(invalidQuery("location","ID"));
         }
         if (!userRepository.existsById(newAsset.getUserEntity().getUserID())) {
-            throw new ApiRequestException(invalidEntID("user"));
+            throw new ApiRequestException(invalidQuery("location","ID"));
         }
-        else assetRepository.save(newAsset);
+        else {
+            assetRepository.save(newAsset);
+        }
         return new ResponseEntity<>(newAsset, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<AssetEntity> updateAsset(AssetEntity newAsset)
-    {
+    public List<AssetEntity> getHighValues(int highValueLimit) {
+        if(assetRepository.getAssetEntitiesByValueGreaterThanEqual(BigDecimal.valueOf(highValueLimit)).isEmpty()){
+            throw new ApiRequestException("There are no assets which are greater than or equal to " + highValueLimit + " specified limit.");
+        }
+        else {
+            return assetRepository.getAssetEntitiesByValueGreaterThanEqual(BigDecimal.valueOf(highValueLimit));
+        }
+    }
+
+    public ResponseEntity<AssetEntity> updateAsset(AssetEntity newAsset) {
         if (!assetRepository.existsById(newAsset.getAssetID())) {
-            throw new ApiRequestException(invalidEntID("asset"));
+            throw new ApiRequestException(invalidQuery("asset","ID"));
         }
         if (!locationRepository.existsById(newAsset.getLocationEntity().getLocationID())) {
-            throw new ApiRequestException(invalidEntID("location"));
+            throw new ApiRequestException(invalidQuery("location","ID"));
         }
         if (!userRepository.existsById(newAsset.getUserEntity().getUserID())) {
-            throw new ApiRequestException(invalidEntID("user"));
+            throw new ApiRequestException(invalidQuery("user","ID"));
         }
         else {
             newAsset.setDescription(newAsset.getDescription());
@@ -94,7 +131,7 @@ public class AssetService {
     public ResponseEntity<String> removeAsset(int id) {
         String assetDesc = getAssetByID(id).getDescription();
         if (!assetRepository.existsById(id)) {
-            throw new ApiRequestException(invalidEntID("asset"));
+            throw new ApiRequestException(invalidQuery("asset","ID"));
         }
         else {
             assetRepository.delete(getAssetByID(id));

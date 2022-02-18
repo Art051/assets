@@ -19,10 +19,10 @@ public class LocationService {
         this.locationRepository = locationRepository;
     }
 
-
-    public String invalidEntID(String entity) {
-        return "This " + entity + " ID does not exist, please enter a different ID";
+    public String invalidQuery(String entity, String field) {
+        return "This " + entity + " " + field + " does not exist, please enter a valid query.";
     }
+
 
     public List<LocationEntity> getAllLocations() {
         return locationRepository.findAll();
@@ -30,13 +30,18 @@ public class LocationService {
 
     public LocationEntity getLocationByID(int id) {
         if (!locationRepository.existsById(id)) {
-            throw new ApiRequestException(invalidEntID("location"));
+            throw new ApiRequestException(invalidQuery("location","ID"));
         }
         return locationRepository.findById(id).get();
     }
 
     public List<LocationEntity> getLocationsByDesc(String description) {
-        return locationRepository.getLocationEntitiesByDescription(description);
+        if (locationRepository.getLocationEntitiesByDescriptionIgnoreCase(description).isEmpty()) {
+            throw new ApiRequestException(invalidQuery("asset", "description"));
+        }
+        else {
+            return locationRepository.getLocationEntitiesByDescriptionIgnoreCase(description);
+        }
     }
 
     public ResponseEntity<LocationEntity> createLocation(LocationEntity newLocation) {
@@ -51,7 +56,7 @@ public class LocationService {
 
     public ResponseEntity<LocationEntity> updateLocation(LocationEntity newLocation) {
         if (!locationRepository.existsById(newLocation.getLocationID())) {
-            throw new ApiRequestException(invalidEntID("location"));
+            throw new ApiRequestException(invalidQuery("location","ID"));
         }
         else {
             newLocation.setDescription(newLocation.getDescription());
@@ -64,7 +69,7 @@ public class LocationService {
     public ResponseEntity<String> removeLocation(int id) {
         String locationDesc = getLocationByID(id).getDescription();
         if (!locationRepository.existsById(id)) {
-            throw new ApiRequestException(invalidEntID("location"));
+            throw new ApiRequestException(invalidQuery("location","ID"));
         }
         else {
             locationRepository.delete(getLocationByID(id));
