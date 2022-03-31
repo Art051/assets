@@ -29,6 +29,12 @@ public class LocationController {
         return locationservice.getLocationByID(id);
     }
 
+    @GetMapping("/get/desc/exists/{desc}")
+    public boolean existsByLocationDescription(
+            @PathVariable(value = "desc") String description) {
+        return locationservice.existsByLocationDescription(description);
+    }
+
     @GetMapping("/get/desc/{desc}")
     public List<LocationEntity> getLocationsByDesc(
             @PathVariable(value = "desc") String description) {

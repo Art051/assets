@@ -35,9 +35,20 @@ public class LocationService {
         return locationRepository.findById(id).get();
     }
 
+    // Made this method to practice Unit testing in Spring and PostgreSQL - being a boolean it should return true/false
+    // (it's similar to the method below, but the one below returns a list of all locations matching the input string description)
+    public boolean existsByLocationDescription(String description){
+        if (!(locationRepository.existsByLocationDescription(description))) {
+            throw new ApiRequestException(invalidQuery("location", "description"));
+        }
+        else {
+            return locationRepository.existsByLocationDescription(description);
+        }
+    }
+
     public List<LocationEntity> getLocationsByDesc(String description) {
         if (locationRepository.getLocationEntitiesByDescriptionIgnoreCase(description).isEmpty()) {
-            throw new ApiRequestException(invalidQuery("asset", "description"));
+            throw new ApiRequestException(invalidQuery("location", "description"));
         }
         else {
             return locationRepository.getLocationEntitiesByDescriptionIgnoreCase(description);
